@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  h1 즐겨찾기
+  #map
+  script.
+    var positions = []; //routes/index.js 에서 GET 방식으로 favorite 스키마에서 데이터를 results로 보낸다1
+  for result in results     
+    script.
+      positions.push({              //배열에 DB에서 가져온 데이터를 넣는다
+        lat: #{result.location[1]},
+        lng: #{result.location[0]},
+        name: '#{result.name}',
+        id: '#{result.placeId}'
+      });
+  script.
+    function initMap() {
+      var center = positions[0] || { lat: 37.540705, lng: 126.956764 };
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: center
+      });
+      positions.forEach(function (pos) {
+        new google.maps.Marker({
+          position: { lat: pos.lat, lng: pos.lng },
+          map: map,
+          title: pos.name
+        });
+      });
+    }
+  script(
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js"
+      + "?key=비번&callback=initMap"
+  )

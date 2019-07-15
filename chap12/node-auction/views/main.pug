@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .timeline
+    h2 경매 진행 목록
+    table#good-list
+      tr
+        th 상품명
+        th 이미지
+        th 시작 가격
+        th 종료 시간
+        th 입장 
+      for good in goods
+        tr
+          td= good.name
+          td: img(src='/img/' + good.img)
+          td= good.price
+          td.time(data-start=good.createdAt) 00:00:00
+          td: a.enter.btn(href='/good/' + good.id) 입장
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/event-source-polyfill/0.0.9/eventsource.min.js')
+  script.
+    var es = new EventSource('/sse');   //new EventSource('/sse');  로 서버와 연결하고
+    es.onmessage = function (e) {       //es.onmessage 또는 es.addEventListener('message') 이벤트 리스너로
+     document.querySelectorAll('.time').forEach(function(td) { //sse.js 서버로부터 데이터를 받을 수 있다
+        var end = new Date(td.dataset.start); //dataset은 chap2를 보자(td.dataset.start = data-start)이다
+        var server = new Date(parseInt(e.data, 10));   //서버로부터 받은 데이터는 e.data에 들어있다
+        end.setDate(end.getDate() + 1);         //*es.onmessage는 sse.js에서 보낸 메시지를 받는다
+        if (server >= end) {                  
+          return td.textContent = '00:00:00';
+        } else {
+          var t = end - server;
+          var seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+          var minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+          var hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+          return td.textContent = hours + ':' + minutes + ':' + seconds ; //여기서 서버센트는 경매시간에 쓰임
+        }
+      });
+    };

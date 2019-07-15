@@ -1,0 +1,101 @@
+doctype
+html
+  head
+    title= title || '장소 검색 서비스'
+    link(rel='stylesheet' href='/main.css')
+  body
+    form#search-form(method='get')
+      span 장소 검색 서비스
+      input#search
+      select#type
+        option(value='') 없음
+        option(value='cafe') 카페
+        option(value='store') 상점
+        option(value='bank') 은행
+        option(value='school') 학교
+      button#search-btn.btn(type='submit') 검색
+      button#loc-search-btn.btn(type='button') 주변검색
+      ul#search-list
+    block content
+    script.
+      var timer;
+      //keyup이벤트는 키보드를 입력하는 순간 콜백 함수를 통해 자동 완성 요청을 서버로 전달하고 해당 데이터를 받는다
+      document.querySelector('#search').addEventListener('keyup', function (e) {
+        var xhr = new XMLHttpRequest();               
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+              var predictions = JSON.parse(xhr.responseText);
+              var ul = document.querySelector('#search-list');
+              ul.innerHTML = '';
+              predictions.forEach(function (pred) {
+                var li = document.createElement('li'); //예상 검색어들을 화면에 표시
+                li.textContent = pred.terms[0].value;
+                li.onclick = function () {
+                  location.href = '/search/' + pred.terms[0].value; //location.href는 현재URL을 바꿀수 있다
+                }
+                ul.appendChild(li);
+              });
+            } else {
+              console.error(xhr.responseText);
+            }
+          }
+        };
+        var query = this.value.trim(); //this는 #search 부분을 가르킨다
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+          if (query) {
+            xhr.open('GET', '/autocomplete/' + query);
+            xhr.send();
+          }
+        }, 200);
+      });
+
+      //검색어를 입력하지 않으면 폼 요청을 하지 않는다
+      document.querySelector('#search-form').addEventListener('submit', function (e) {
+        e.preventDefault();                          
+        if (!this.search.value || !this.search.value.trim()) {
+          this.search.focus();  //해당 element에 focus를 해준다 (해당 element만 선택한다, 효과를 한정시킬수있다)
+          return false;         //(blur()는 해당 element에서 focus를 해제한다)
+        }
+        if (this.type.value) {        //폼목록에서 select 부분을 type으로 설정했다 select로 type을 정할때
+          return location.href = '/search/' + this.search.value.trim() //이렇게 리턴된다
+            + '?type=' + this.type.value;   //this.search = 입력창, this.type = select 옵션의 선택부분
+        }
+        this.action = '/search/' + this.search.value.trim();//검색어를 입력한 경우
+        return this.submit();                               //폼 요청 주소(this.action)를 노드 라우터에 맞게
+      })                                                //설정한 후, 폼 요청을 전송한다
+
+      //주변검색 버튼을 눌렀을 때, 내 위치를 기반으로 위도,경도를 찾아서 서버에 요청을 보내는 이벤트 추가
+      document.querySelector('#loc-search-btn').addEventListener('click', function (e) {
+        e.preventDefault();
+        if (navigator.geolocation) { // GPS를 지원하면
+        //navigator.geolocation는 경도 위도를 알려주는 웹API이다 (아래 참조)
+        //https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation
+        //https://www.zerocho.com/category/HTML&DOM/post/59155228a22a5d001827ea5d
+        //제로초가 말한 사용법
+          navigator.geolocation.getCurrentPosition(function (position) {
+            var search = document.querySelector('#search');
+            var type = document.querySelector('#type').value; //여기도 type을 추가한다
+            if (!search.value || !search.value.trim()) {
+              search.focus(); //검색어를 입력하지 않으면 검색어 element를 선택한다()
+              return false;
+            }
+            var lat = position.coords.latitude; //navigator.geolocation의 경도,위도는 옆과 같은 방식으로
+            var lng = position.coords.longitude;//값을 가져온다(자세한 사항은 위의 링크 참조) 내위치가져온다
+            location.href = '/search/' + search.value.trim()
+              + '?lat=' + lat + '&lng=' + lng + '&type=' + type; //타입값을 넣는다
+              //location.href 로 현재 URL을 바꾼다(서버 라우터에서 req.query()로 값을 가져와서 처리한다)
+          }, function () {
+            alert('내 위치 확인 권한을 허용하세요.');
+          }, {
+            enableHighAccuracy: false,
+            maximumAge: 0,
+            timeout: Infinity
+          });
+        } else {
+          alert('GPS를 지원하지 않습니다');
+        }
+      });
