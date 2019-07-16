@@ -78,6 +78,13 @@
 //    렌더링 하기 때문에 즐겨찾기가 추가된 것을 확인할 수 있다.
 
 
+///////////////////////////////////////////////////////////////
+//google maps API 안전하게 사용하는 방법
+//여기서 views/indexpug, result.pug 에서 APIKEY를 사용하는데...API키를 보안처리해야 다른 사람이 사용하더라도
+//과금처리가 안된다..
+//https://cloud.google.com/docs/authentication/api-keys#adding_http_restrictions 여기를 참고하면 된다.
+
+
 ////////////////////////////////////////////////////////////
 
 //node-place            폴더를 만들고 package.json 파일을 만들고 설치관련 모듈을 적는다.
@@ -138,7 +145,7 @@
 //위치 기반 검색 수행하기
 //Google Places API가 정확한 결과를 리턴하지는 않기 때문에 정확도를 높이기 위해 검색 위치 주변을 검색하는
 //API와 특정 종류의 장소(카페, 병원등)만 검색하는 API를 추가로 만들어보자
-//* views/result.pug를 보면  navigator.geolocation.getCurrentPosition(function (position) { 부분에서
+//* views/layout.pug를 보면  navigator.geolocation.getCurrentPosition(function (position) { 부분에서
 //  위치정보를 주면 
 
 //views/layout.pug          에서 주변검색(내위치확인) 버튼을 추가하고 관련 이벤트를 추가해보자

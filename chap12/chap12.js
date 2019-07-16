@@ -45,7 +45,7 @@
 //   (sse.js 에서 보낸 정보는 main.pug 의 es.onmessage = function (e) { 에서 받는다.)
 //   sse.js(경매남은시간관련 정보), socket.js(상품에 대한 경매 호가 및 메시지) 두곳과 app.js 을 연결한다.
 
-//6. main,pug에서 입장을  눌러  get('/good/:id'  에서 경매에 참여해보자 <<- 경매상태목록뜸
+//6. main.pug에서 입장을  눌러  get('/good/:id'  에서 경매에 참여해보자 <<- 경매상태목록뜸
 //   auction.pug 를 렌더링 하고 여기서 sse.js, socket.js 를 연결시킨다.
 // 첫번째는 sse.js, 두번째는 socket.js 을 auction.pug와 연결한것이다.
 // script(src='https://cdnjs.cloudflare.com/ajax/libs/event-source-polyfill/0.0.9/eventsource.min.js')

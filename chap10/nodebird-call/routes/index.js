@@ -11,7 +11,7 @@ axios.defaults.headers.origin = 'http://localhost:8003'; //axios 디폴트 설�
 const request = async (req, api) => {
   try {
     if (!req.session.jwt) { // 세션에 토큰이 없으면
-      const tokenResult = await axios.post(`${URL}/token`, {
+      const tokenResult = await axios.post(`${URL}/token`, { //토큰을 요청
         clientSecret: process.env.CLIENT_SECRET,
       });
       req.session.jwt = tokenResult.data.token; // 세션에 토큰 저장
