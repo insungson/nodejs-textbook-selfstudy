@@ -221,6 +221,16 @@
 
 //git push -u origin master            으로 업로드를 하면 github repository에 올라온 것을 확인할 수 있다.
 
+
+//git push 에러 
+//master -> master (fetch first)   (이미 변경된 파일이 원격저장소에 있을경우 발생한다.)
+//위와 같은 에러가 발생했다. 이럴땐 
+//git pull origin master  (이렇게 push 한것을 땡기면 branch가 하나이기 때문에 자동으로 merge 된다.)
+//http://b8goal.blogspot.com/2018/12/git-fetch-first.html 
+//https://stackoverflow.com/questions/28429819/rejected-master-master-fetch-first 
+//두개 참조
+//fetch&pull 사진 참조
+
 //**중요한건 웹에서 만든 public Repository와 여기서 git init으로 설정한 디렉터리의 이름이 같아야 한다.
 //  또한 https://recoveryman.tistory.com/392  여기서 github에 올리기 위한 컴퓨터 자체 권한 설정을 해야한다.
 //  제어판 -> 사용자계정 -> windows 자격 증명 관리 -> git:https://github.com 을 펼치기 누르고 -> 편집
